@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shopapp/utils/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
@@ -7,71 +8,130 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController _emailController;
-  TextEditingController _passwordController;
+  TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
+  TextEditingController _email;
+  TextEditingController _password;
+  final _formKey = GlobalKey<FormState>();
+  final _key = GlobalKey<ScaffoldState>();
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
-    _emailController = TextEditingController(text: "");
-    _passwordController = TextEditingController(text: "");
+    _email = TextEditingController(text: "");
+    _password = TextEditingController(text: "");
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
+    final user = Provider.of<UserRepository>(context);
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      key: _key,
+      body: Form(
+        key: _formKey,
+        child: Container(
+          alignment: Alignment.center,
+          child: ListView(
+            shrinkWrap: true,
             children: <Widget>[
-              const SizedBox(height: 100.0),
-              Text("Login", style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0
-              ),),
-              const SizedBox(height: 20.0),
-              RaisedButton(
-                child: Text("Login with Google"),
-                onPressed: () async {
-                  bool res = await AuthProvider().loginWithGoogle();
-                  if(!res)
-                    print("error logging in with google");
-                },
-              ),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  hintText: "Enter email"
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: TextFormField(
+                  key: Key("email-field"),
+                  controller: _email,
+                  validator: (value) =>
+                      (value.isEmpty) ? "Please Enter Email" : null,
+                  style: style,
+                  decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.email),
+                      labelText: "Email",
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30))),
                 ),
               ),
-              const SizedBox(height: 10.0),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Enter password"
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: TextFormField(
+                  key: Key("password-field"),
+                  controller: _password,
+                  obscureText: true,
+                  validator: (value) =>
+                      (value.isEmpty) ? "Please Enter Password" : null,
+                  style: style,
+                  decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.lock),
+                      labelText: "Password",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30))),
                 ),
               ),
-              const SizedBox(height: 10.0),
-              RaisedButton(
-                child: Text("Login"),
-                onPressed: ()async {
-                  if(_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-                    print("Email and password cannot be empty");
-                    return;
-                  }
-                  bool res = await AuthProvider().signInWithEmail(_emailController.text, _passwordController.text);
-                  if(!res) {
-                    print("Login failed");
-                  }
-                },
-              )
+              SizedBox(height: 10.0),
+              user.status == Status.Authenticating
+                  ? Center(child: CircularProgressIndicator())
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Material(
+                        elevation: 5.0,
+                        borderRadius: BorderRadius.circular(30.0),
+                        color: Theme.of(context).primaryColor,
+                        child: MaterialButton(
+                          onPressed: () async {
+                            if (_formKey.currentState.validate()) {
+                              if (!await user.signIn(
+                                  _email.text, _password.text))
+                                _key.currentState.showSnackBar(SnackBar(
+                                  content: Text("Something is wrong"),
+                                ));
+                            }
+                          },
+                          child: Text(
+                            "Sign In",
+                            style: style.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ),
+              SizedBox(height: 10.0),
+              user.status == Status.Authenticating_Google
+                  ? Center(child: CircularProgressIndicator())
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Material(
+                        elevation: 5.0,
+                        borderRadius: BorderRadius.circular(30.0),
+                        color: Colors.blueAccent,
+                        child: MaterialButton(
+                          onPressed: () async {
+                            if (!await user.loginWithGoogle())
+                              _key.currentState.showSnackBar(SnackBar(
+                                content: Text("Something is wrong"),
+                              ));
+                          },
+                          child: Text(
+                            "Sign In with Google",
+                            style: style.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
   }
 }
