@@ -14,6 +14,9 @@ class UserRepository with ChangeNotifier {
   final FirebaseAuth auth;
   FirebaseUser _user;
   Status _status = Status.Uninitialized;
+  String email = "";
+  String name = "";
+  String photoUrl = "";
 
   UserRepository.instance({this.auth}) {
     auth.onAuthStateChanged.listen(onAuthStateChanged);
@@ -27,6 +30,8 @@ class UserRepository with ChangeNotifier {
       _status = Status.Authenticating;
       notifyListeners();
       await auth.signInWithEmailAndPassword(email: email, password: password);
+      this.email = email;
+      this.name = name;
       return true;
     } catch (e) {
       _status = Status.Unauthenticated;
@@ -37,6 +42,9 @@ class UserRepository with ChangeNotifier {
 
   Future signOut() async {
     auth.signOut();
+    this.email = "";
+    this.name = "";
+    this.photoUrl = "";
     _status = Status.Unauthenticated;
     notifyListeners();
     return Future.delayed(Duration.zero);
@@ -59,6 +67,10 @@ class UserRepository with ChangeNotifier {
       if (account == null) return false;
       _status = Status.Authenticating_Google;
       notifyListeners();
+      this.email = account.email;
+      this.name = account.displayName;
+      this.photoUrl = account.photoUrl;
+      print(account.photoUrl);
       AuthResult res =
           await auth.signInWithCredential(GoogleAuthProvider.getCredential(
         idToken: (await account.authentication).idToken,
@@ -72,14 +84,6 @@ class UserRepository with ChangeNotifier {
       print(e.message);
       print("Error logging with google");
       return false;
-    }
-  }
-
-  Future<void> logOut() async {
-    try {
-      await auth.signOut();
-    } catch (e) {
-      print("error logging out");
     }
   }
 }

@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopapp/Components/horizontal_listview.dart';
 import 'package:shopapp/Components/product.dart';
+import 'package:shopapp/components/drawerHead.dart';
 import 'package:shopapp/pages/cart.dart';
 import 'package:shopapp/utils/firebase_auth.dart';
-
-
 
 class HomePage extends StatefulWidget {
   @override
@@ -58,21 +57,7 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           children: <Widget>[
             // header
-            UserAccountsDrawerHeader(
-              accountName: Text('Nfor'),
-              accountEmail: Text('nforesperance1@gmal.com'),
-              currentAccountPicture: GestureDetector(
-                child: CircleAvatar(
-                  backgroundColor: Colors.grey,
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              decoration: BoxDecoration(color: Colors.pink),
-            ),
-
+            DrawerHead(),
             //body
 
             // InkWell changes a widget into a button (makes it clickable)
@@ -155,7 +140,7 @@ class _HomePageState extends State<HomePage> {
 
             InkWell(
               onTap: () {
-                user.logOut();
+                user.signOut();
               },
               child: ListTile(
                 title: Text('Log Out'),
@@ -164,8 +149,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-
-
           ],
         ),
       ),
@@ -177,8 +160,9 @@ class _HomePageState extends State<HomePage> {
           //The padding is applied on the child
           Padding(
             padding: EdgeInsets.all(4.0),
-            child: Container(child: Text("Categories"),
-            alignment: Alignment.centerLeft ,
+            child: Container(
+              child: Text("Categories"),
+              alignment: Alignment.centerLeft,
             ),
           ),
 
@@ -188,8 +172,8 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: EdgeInsets.all(4.0),
             child: Container(
-              alignment: Alignment.centerLeft,
-              child: Text("Recent Products")),
+                alignment: Alignment.centerLeft,
+                child: Text("Recent Products")),
           ),
 
           // grid view
