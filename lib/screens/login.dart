@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:shopapp/screens/homepage.dart';
 import 'package:shopapp/utils/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
@@ -161,33 +162,31 @@ class _LoginState extends State<Login> {
             width: double.infinity,
             height: double.infinity,
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: Container(
-              alignment: Alignment.topCenter,
-              child: Image.asset(
-                "assets/images/lg.png",
-                width: 150,
-                height: 150,
-              ),
+          Container(
+            alignment: Alignment.topCenter,
+            child: Image.asset(
+              "assets/images/lg.png",
+              width: 280,
+              height: 240,
             ),
           ),
           Container(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withOpacity(0.7),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 200.0),
+            padding: const EdgeInsets.only(top: 220.0),
             child: Container(
               alignment: Alignment.center,
               child: Center(
                 child: Form(
                     key: _formKey,
-                    child: Column(children: <Widget>[
+                    child: ListView(
+                      children: <Widget>[
                       Padding(
                         padding:
                             const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
                         child: Material(
-                          borderRadius: BorderRadius.circular(20.0),
+                          borderRadius: BorderRadius.circular(10.0),
                           color: Colors.white.withOpacity(0.8),
                           elevation: 0.0,
                           child: Padding(
@@ -218,7 +217,7 @@ class _LoginState extends State<Login> {
                         padding:
                             const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
                         child: Material(
-                          borderRadius: BorderRadius.circular(20.0),
+                          borderRadius: BorderRadius.circular(10.0),
                           color: Colors.white.withOpacity(0.8),
                           elevation: 0.0,
                           child: Padding(
@@ -247,7 +246,7 @@ class _LoginState extends State<Login> {
                             const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
                         child: Material(
                             borderRadius: BorderRadius.circular(20.0),
-                            color: Colors.red,
+                            color: Colors.blue,
                             elevation: 0.0,
                             child: MaterialButton(
                               onPressed: () async {
@@ -268,8 +267,67 @@ class _LoginState extends State<Login> {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20.0),
+                                    fontSize: 18.0),
+                              ),
+                            )),
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Forgot password",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => HomePage()));
+                                    },
+                                    child: Text(
+                                      "Create an account",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Colors.white),
+                                    ))),
+                          ],
+                        ),
+
+                       
+                      // Expanded(child: Container()),
+                      Divider(color: Colors.white,),
+                      Text("Other Sign In Options",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0
+                      ),),
+                      Padding(
+                        padding:
+                            const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
+                        child: Material(
+                            borderRadius: BorderRadius.circular(20.0),
+                            color: Colors.red,
+                            elevation: 0.0,
+                            child: MaterialButton(
+                              onPressed: () async{
+                               await user.handleSignIn(); 
+                              },
+                              minWidth: MediaQuery.of(context).size.width,
+                              child: Text(
+                                "google",
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18.0),
                               ),
                             )),
                       ),
@@ -291,25 +349,6 @@ class _LoginState extends State<Login> {
                 ),
               )))
         ],
-      ),
-      bottomNavigationBar: Container(
-        child: Padding(
-          padding: const EdgeInsets.only(
-            left: 12.0,
-            right: 12.0,
-            top: 8.0,
-            bottom: 8.0,
-          ),
-          child: FlatButton(
-              color: Colors.red.shade900,
-              onPressed: () {
-                user.handleSignIn();
-              },
-              child: Text(
-                "Sign In/Sign Up with Google",
-                style: TextStyle(color: Colors.white),
-              )),
-        ),
       ),
     );
   }
