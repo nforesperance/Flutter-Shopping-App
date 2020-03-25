@@ -59,9 +59,9 @@ class AuthHomePage extends StatelessWidget {
           case Status.Unauthenticated:
             return LoginPage();
           case Status.Authenticating:
-            return LoginPage();
+            return SplashPage();
           case Status.Authenticating_Google:
-            return LoginPage();
+            return SplashPage();
           case Status.Authenticated:
             return HomePage();
         }

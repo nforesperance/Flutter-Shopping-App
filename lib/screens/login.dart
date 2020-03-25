@@ -107,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                         color: Colors.blueAccent,
                         child: MaterialButton(
                           onPressed: () async {
-                            if (!await user.loginWithGoogle())
+                            if (!await user.handleSignIn())
                               _key.currentState.showSnackBar(SnackBar(
                                 content: Text("Something is wrong"),
                               ));
