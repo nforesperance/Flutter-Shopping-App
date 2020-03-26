@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopapp/screens/homepage.dart';
 import 'package:shopapp/screens/login.dart';
+import 'package:shopapp/screens/signup.dart';
 import 'package:shopapp/screens/splash.dart';
 
 import 'utils/firebase_auth.dart';
@@ -62,6 +63,8 @@ class AuthHomePage extends StatelessWidget {
             return Login();
           case Status.Authenticating_Google:
             return Login();
+          case Status.SignUp:
+            return SignUp();
           case Status.Authenticated:
             return HomePage();
         }

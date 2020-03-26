@@ -1,156 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:shopapp/screens/homepage.dart';
-import 'package:shopapp/screens/signup.dart';
+import 'package:shopapp/screens/login.dart';
 import 'package:shopapp/utils/firebase_auth.dart';
 
-class LoginPage extends StatefulWidget {
+class SignUp extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignUpState createState() => _SignUpState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
-  TextEditingController _email;
-  TextEditingController _password;
-  final _formKey = GlobalKey<FormState>();
-  final _key = GlobalKey<ScaffoldState>();
-
-  @override
-  void initState() {
-    super.initState();
-    _email = TextEditingController(text: "");
-    _password = TextEditingController(text: "");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final user = Provider.of<UserRepository>(context);
-    return Scaffold(
-      key: _key,
-      body: Form(
-        key: _formKey,
-        child: Container(
-          alignment: Alignment.center,
-          child: ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: TextFormField(
-                  key: Key("email-field"),
-                  controller: _email,
-                  validator: (value) =>
-                      (value.isEmpty) ? "Please Enter Email" : null,
-                  style: style,
-                  decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.email),
-                      labelText: "Email",
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: TextFormField(
-                  key: Key("password-field"),
-                  controller: _password,
-                  obscureText: true,
-                  validator: (value) =>
-                      (value.isEmpty) ? "Please Enter Password" : null,
-                  style: style,
-                  decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock),
-                      labelText: "Password",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                ),
-              ),
-              SizedBox(height: 10.0),
-              user.status == Status.Authenticating
-                  ? Center(child: CircularProgressIndicator())
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Material(
-                        elevation: 5.0,
-                        borderRadius: BorderRadius.circular(30.0),
-                        color: Theme.of(context).primaryColor,
-                        child: MaterialButton(
-                          onPressed: () async {
-                            if (_formKey.currentState.validate()) {
-                              if (!await user.signIn(
-                                  _email.text, _password.text))
-                                _key.currentState.showSnackBar(SnackBar(
-                                  content: Text("Something is wrong"),
-                                ));
-                            }
-                          },
-                          child: Text(
-                            "Sign In",
-                            style: style.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ),
-              SizedBox(height: 10.0),
-              user.status == Status.Authenticating_Google
-                  ? Center(child: CircularProgressIndicator())
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Material(
-                        elevation: 5.0,
-                        borderRadius: BorderRadius.circular(30.0),
-                        color: Colors.blueAccent,
-                        child: MaterialButton(
-                          onPressed: () async {
-                            if (!await user.handleSignIn())
-                              _key.currentState.showSnackBar(SnackBar(
-                                content: Text("Something is wrong"),
-                              ));
-                          },
-                          child: Text(
-                            "Sign In with Google",
-                            style: style.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _email.dispose();
-    _password.dispose();
-    super.dispose();
-  }
-}
-
-// another login
-class Login extends StatefulWidget {
-  @override
-  _LoginState createState() => _LoginState();
-}
-
-class _LoginState extends State<Login> {
+class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
   final _key = GlobalKey<ScaffoldState>();
 
   TextEditingController _email = TextEditingController();
   TextEditingController _password = TextEditingController();
+  TextEditingController _username = TextEditingController();
+  TextEditingController _confirmpassword = TextEditingController();
+  String gender;
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserRepository>(context);
@@ -183,6 +50,36 @@ class _LoginState extends State<Login> {
                 child: Form(
                     key: _formKey,
                     child: ListView(children: <Widget>[
+                      // username
+                      Padding(
+                        padding:
+                            const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
+                        child: Material(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Colors.white.withOpacity(0.8),
+                          elevation: 0.0,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: TextFormField(
+                              controller: _username,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Username",
+                                icon: Icon(Icons.note_add),
+                              ),
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return "The username field cannot be empty";
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      //email
                       Padding(
                         padding:
                             const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
@@ -214,6 +111,8 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                       ),
+
+                      //password
                       Padding(
                         padding:
                             const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
@@ -243,6 +142,42 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                       ),
+
+                      // confirm password
+                      Padding(
+                        padding:
+                            const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
+                        child: Material(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Colors.white.withOpacity(0.8),
+                          elevation: 0.0,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: TextFormField(
+                              controller: _confirmpassword,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Confirm Password",
+                                icon: Icon(Icons.lock_outline),
+                              ),
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return "The password field cannot be empty";
+                                } else if (value.length < 6) {
+                                  return "the password has to be at least 6 characters long";
+                                } else if (value != _password.text) {
+                                  return "Password donot Match";
+                                }
+
+                                return null;
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      //login button
                       Padding(
                         padding:
                             const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
@@ -290,16 +225,16 @@ class _LoginState extends State<Login> {
                               padding: const EdgeInsets.all(8.0),
                               child: InkWell(
                                   onTap: () async {
-                                  await user.signUpPage();
+                                  await user.signInPage();
                                 },
                                   child: RichText(
                                       text: TextSpan(children: [
                                     TextSpan(
-                                      text: "Don't have and account?  ",
+                                      text: "Already have and account?  ",
                                       style: TextStyle(color: Colors.white),
                                     ),
                                     TextSpan(
-                                      text: "Sign Up",
+                                      text: "Sign In",
                                       style: TextStyle(
                                           color: Colors.red, fontSize: 16),
                                     ),

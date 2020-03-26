@@ -11,6 +11,7 @@ enum Status {
   Authenticating,
   Unauthenticated,
   Authenticating_Google,
+  SignUp,
 }
 
 class UserRepository with ChangeNotifier {
@@ -152,5 +153,15 @@ class UserRepository with ChangeNotifier {
       print("Error logging with google");
       return false;
     }
+  }
+   Future signUpPage() async {
+    _status = Status.SignUp;
+    notifyListeners();
+    return Future.delayed(Duration.zero);
+  }
+   Future signInPage() async {
+    _status = Status.Unauthenticated;
+    notifyListeners();
+    return Future.delayed(Duration.zero);
   }
 }
